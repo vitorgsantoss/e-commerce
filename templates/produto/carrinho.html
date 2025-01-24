@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+  {% for produto, atributos in request.session.carrinho.items %}
+    {{ produto }}:<br />
+    atributos:{{ atributos }}<br /><br />
+  {% endfor %}
+{% endblock %}
