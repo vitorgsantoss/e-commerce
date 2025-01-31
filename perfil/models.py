@@ -13,6 +13,7 @@ class Perfil(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     data_nascimento = models.DateField()
     cpf = models.CharField(max_length=14)
+    carrinho = models.JSONField(null=True, blank=True)
 
     def clean(self):
         error_messages = {}

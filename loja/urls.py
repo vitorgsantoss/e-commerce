@@ -23,7 +23,7 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('produto.urls')),
     path('perfil/', include('perfil.urls')),
     path('pedido/', include('pedido.urls')),
+    path('', include('produto.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)+debug_toolbar_urls()
