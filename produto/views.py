@@ -1,11 +1,11 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.views.generic.list import ListView
+from django.shortcuts import render, redirect, reverse, get_object_or_404, get_list_or_404
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.views import View
 from .models import Produto, Variacao
-from django.http import HttpResponse
-import pprint
+from perfil.models import Perfil, Endereco
+
 
 
 class ListaProdutos(ListView):
@@ -193,4 +193,18 @@ class Carrinho(View):
 
 
 class Finalizar(View):
-    ...
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('perfil:criar')
+        usuario = get_object_or_404(Perfil, usuario = self.request.user)
+        enderecos = Endereco.objects.filter( usuario = usuario)
+        contexto = {
+            'carrinho': self.request.session.get('carrinho', None),
+            'perfil': usuario,
+            'enderecos': enderecos,
+        }
+        return render(
+            self.request, 
+            'produto/resumo_da_compra.html',
+            contexto
+        )
