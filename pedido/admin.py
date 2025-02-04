@@ -15,5 +15,5 @@ class PedidoAdmin(admin.ModelAdmin):
     ordering = '-id',
     search_fields = 'id', 'user', 'total', 'status',
     inlines = [
-        ItemPedidoInLine
+        ItemPedidoInLine,
     ]

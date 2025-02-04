@@ -70,9 +70,9 @@
     <div class="row">
       <div class="col">
         {% if not request.user.is_authenticated %}
-          <a class="btn btn-block btn-primary btn-lg" href="#">Realizar login para finalizar o pedido</a>
+          <a class="btn btn-block btn-primary btn-lg" href="{% url 'perfil:criar' %}">Realizar login para finalizar o pedido</a>
         {% else %}
-          <a class="btn btn-block btn-primary btn-lg" href="#">Realizar pedido e pagar</a>
+          <a class="btn btn-block btn-primary btn-lg" href="{% url 'pedido:pagar' %}">Realizar pedido e pagar</a>
         {% endif %}
       </div>
     </div>

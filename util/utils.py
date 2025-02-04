@@ -8,8 +8,10 @@ def quantidade_produtos(carrinho):
 
 def valor_total(carrinho):
     total = 0
+    
     for produto in carrinho.values():
-        if produto['preco_quantitativo_promocional'] in carrinho:
+        
+        if produto['preco_quantitativo_promocional']:
             total += produto['preco_quantitativo_promocional']
 
         else:

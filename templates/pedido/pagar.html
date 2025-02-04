@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+  <div class="row">
+    <div class="col">
+      <h3>Efetue o pagamento abaixo</h3>
+      <h3>Para o desenvolvedor: adicione o método de pagamento desejado</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <a class="btn btn-primary btn-block btn-lg" href="{% url 'pedido:fecharpedido' %}">Realizar Pagamento</a>
+    </div>
+  </div>
+{% endblock %}

@@ -20,7 +20,7 @@ class Pedido(models.Model):
     )
 
     def __str__(self):
-        return f'Pedido {self.pedido.pk}'
+        return f'Pedido {self.pk}'
 
 
 class ItemPedido(models.Model):

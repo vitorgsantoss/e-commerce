@@ -44,8 +44,8 @@ class AdicionarAoCarrinho(View):
         produto_nome = produto.nome
         variacao_nome = variacao.nome or ''
         variacao_id = variacao_id
-        preco_unitario  = produto.preco_marketing
-        preco_unitario_promocional = produto.preco_marketing_promocional 
+        preco_unitario  = variacao.preco
+        preco_unitario_promocional = variacao.preco_promocional
         slug  = produto.slug
         imagem  = produto.imagem.name or ''
 
@@ -177,8 +177,6 @@ class RemoverProdutoDoCarrinho(View):
         )
         
 
-
-
 class Carrinho(View):
     def get(self, *args, **kwargs):
         carrinho = self.request.session.get('carrinho')
@@ -195,14 +193,29 @@ class Carrinho(View):
 class Finalizar(View):
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
+            messages.error(
+                self.request, 
+                'Usuário não logado!'
+            )
             return redirect('perfil:criar')
-        usuario = get_object_or_404(Perfil, usuario = self.request.user)
-        enderecos = Endereco.objects.filter( usuario = usuario)
+
+        usuario = Perfil.objects.select_related('usuario').get(usuario=self.request.user)
+
+        if not usuario:
+            messages.error(
+                self.request,
+                'Perfil não encontrado!'
+            )
+            return redirect('perfil:criar')
+
+        enderecos = Endereco.objects.filter(usuario=usuario)
+
         contexto = {
             'carrinho': self.request.session.get('carrinho', None),
             'perfil': usuario,
             'enderecos': enderecos,
         }
+        
         return render(
             self.request, 
             'produto/resumo_da_compra.html',
