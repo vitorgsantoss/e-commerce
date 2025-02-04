@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+  {% if pedidos %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>N° Pedido</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pedido in pedidos %}
+            <tr>
+              <td>
+                <a href="{% url 'pedido:detalhe' pedido.id %}">{{ pedido.id }}</a>
+              </td>
+              <td>{{ pedido.total }}</td>
+
+              <td>{{ pedido.get_status_display }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}

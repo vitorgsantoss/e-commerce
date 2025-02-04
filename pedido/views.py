@@ -1,8 +1,52 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.contrib import messages
 from produto.models import Variacao
 from .models import Pedido, ItemPedido
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+
+
+class DispatchLoginRequired(View):
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            messages.error(
+                self.request,
+                'Usuário não está logado!'
+            )
+            return redirect('perfil:criar')
+        return super().dispatch( *args, **kwargs)
+        
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(user = self.request.user)
+        return qs
+    
+        
+
+        
+    
+
+class Pagar(DispatchLoginRequired, DetailView):
+    template_name = 'pedido/pagar.html'
+    model = Pedido
+    pk_url_kwarg_ = 'pk'
+    context_object_name = 'pedido'
+    
+
+class ListaPedidos(DispatchLoginRequired, ListView):
+    template_name = 'pedido/lista.html'
+    model = Pedido
+    context_object_name = 'pedidos'
+    paginate_by = 6
+    
+
+class Detalhe(DispatchLoginRequired, DetailView):
+    template_name = 'pedido/detalhe.html'
+    model = Pedido
+    pk_url_kwarg_ = 'pk'
+    context_object_name = 'pedido'
+
 
 class FecharPedido(View):
     def get(self,*args, **kwargs):
@@ -85,13 +129,15 @@ class FecharPedido(View):
 
         del self.request.session['carrinho']
 
-        return redirect('produto:lista')
+        return redirect(
+            reverse(
+                'pedido:pagar',
+                kwargs={
+                    'pk': pedido.id
+                }
+            )
+        )
 
 
-class Pagar(View):
-    template_name = 'pedido/pagar.html'
-    def get(self,*args, **kwargs):
-        return render(self.request, self.template_name)
 
-class Detalhe(View):
-    ...
+
