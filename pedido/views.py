@@ -39,6 +39,7 @@ class ListaPedidos(DispatchLoginRequired, ListView):
     model = Pedido
     context_object_name = 'pedidos'
     paginate_by = 6
+    ordering = ['-id']
     
 
 class Detalhe(DispatchLoginRequired, DetailView):
@@ -71,6 +72,8 @@ class FecharPedido(View):
         bd_variacao = list(Variacao.objects.select_related('produto').filter(
             id__in=carrinho_variacoes))
         
+        cart_total = 0
+        
         for variacao in bd_variacao:
             vid=str(variacao.pk)
             if variacao.estoque < carrinho[vid]['quantidade']:
@@ -94,7 +97,7 @@ class FecharPedido(View):
                 )
                 return redirect('produto:finalizar')
             
-            cart_total = carrinho[vid]['preco_quantitativo_promocional'] or \
+            cart_total += carrinho[vid]['preco_quantitativo_promocional'] or \
                 carrinho[vid]['preco_quantitativo']
 
             variacao.estoque -= carrinho[str(variacao.pk)]['quantidade']
