@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load vg_filters %}
+
+{% block title %}
+  Endereços de {{ user.first_name }} |
+{% endblock %}
+
+{% block conteudo %}
+  <div class="row">
+    <div class="col">
+      <h3 class="mb-4">Endereços de {{ user.first_name }}</h3>
+      <p>Abaixo estão todos os seus endereços cadastrados.</p>
+
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <tr>
+            <th scope="col">Endereço</th>
+            <th scope="col">Rua</th>
+            <th scope="col">N°</th>
+            <th scope="col">Bairro</th>
+            <th scope="col">CEP</th>
+            <th scope="col">Cidade</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Mais Detalhes</th>
+          </tr>
+
+          {% for endereco in enderecos %}
+            <tr>
+              <th scope="row">{{ endereco }}</th>
+              <td>{{ endereco.rua }}</td>
+              <td>{{ endereco.numero }}</td>
+              <td>{{ endereco.bairro }}</td>
+              <td>{{ endereco.cep }}</td>
+              <td>{{ endereco.cidade }}</td>
+              <td>{{ endereco.estado }}</td>
+              <td>
+                <a href="{% url 'perfil:modificar_endereco' endereco.pk %}">Ver <i class="fas fa-search-plus ml-2"></i></a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    <a href="{% url 'perfil:criar_endereco' %}" class="btn btn-primary btn-block btn-lg mt-3">Novo Endereço</a>
+  </div>
+
+  {% include 'partials/_pagination.html' %}
+{% endblock %}

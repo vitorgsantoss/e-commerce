@@ -90,7 +90,7 @@ class Endereco(models.Model):
             raise ValidationError(error_messages)
 
     def __str__(self):
-        return f'Endereço {self.usuario.pk}'
+        return f'Endereço {self.pk}'
     
     class Meta:
         verbose_name = 'Endereço'

@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from . import forms, models
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.contrib.auth import authenticate, login, logout
 import copy
 
@@ -13,14 +15,11 @@ class BasePerfil(View):
         super().setup(*args, **kwargs)
         self.template_name = 'perfil/criar.html'
         self.perfil = None
-        self.endereco = None
         
         if self.request.user.is_authenticated:
             self.perfil = models.Perfil.objects.filter(
                 usuario=self.request.user
                 ).first()
-            self.endereco = models.Endereco.objects.filter(
-                usuario = self.perfil).first()
             self.contexto = {
                 'userform':forms.UserForm(
                     data=self.request.POST or None,
@@ -32,9 +31,6 @@ class BasePerfil(View):
                     data=self.request.POST or None,
                     instance= self.perfil,
                     ),
-                'enderecoform':forms.EnderecoForm(
-                    data=self.request.POST or None,
-                    instance=self.endereco),
                 }
         
         else: 
@@ -43,8 +39,6 @@ class BasePerfil(View):
                     data=self.request.POST or None,
                     ),
                 'perfilform':forms.PerfilForm(data=self.request.POST or None),
-                'enderecoform':forms.EnderecoForm(
-                    data=self.request.POST or None),
                 }
         
         if self.request.user.is_authenticated:
@@ -53,16 +47,16 @@ class BasePerfil(View):
         self.render = render(self.request, self.template_name, self.contexto)
         self.userform = self.contexto['userform']
         self.perfilform = self.contexto['perfilform']
-        self.enderecoform = self.contexto['enderecoform']
+        
 
     def get(self,*args, **kwargs):
 
         return self.render
 
+
 class Criar(BasePerfil):
     def post(self, *args, **kwargs):
-        if not self.userform.is_valid() or not self.perfilform.is_valid() \
-            or not self.enderecoform.is_valid():
+        if not self.userform.is_valid() or not self.perfilform.is_valid():
             messages.error(
                 self.request, 
                 'Dados inválidos! Verifique o formulário e tente novamente.'
@@ -98,10 +92,6 @@ class Criar(BasePerfil):
             perfil.usuario = usuario
             perfil.save()
 
-            endereco = self.enderecoform.save(commit=False)
-            endereco.usuario = perfil
-            endereco.save()
-
         else:
             usuario = self.userform.save(commit=False)
             usuario.set_password(password)
@@ -111,9 +101,7 @@ class Criar(BasePerfil):
             perfil.usuario = usuario
             perfil.save()
 
-            endereco = self.enderecoform.save(commit=False)
-            endereco.usuario = perfil
-            endereco.save()
+            
             message = 'criado'
         
         if password:
@@ -173,7 +161,6 @@ class Login(View):
         return redirect('produto:lista')
 
 
-
 class Logout(View):
     def get(self,*args, **kwargs):
         usuario = get_object_or_404(
@@ -191,3 +178,120 @@ class Logout(View):
         
         messages.success(self.request, 'Usuário deslogado.')
         return redirect('produto:lista')
+    
+class DispatchLoginRequired(View):
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            messages.error(
+                self.request,
+                'Usuário não está logado!'
+            )
+            return redirect('perfil:criar')
+        return super().dispatch( *args, **kwargs)
+        
+    def get_queryset(self):
+        perfil = models.Perfil.objects.filter(usuario=self.request.user).first()
+        qs = super().get_queryset()
+        qs = qs.filter(usuario = perfil)
+        return qs
+    
+
+class ListaEnderecos(DispatchLoginRequired, ListView):
+    template_name = 'perfil/lista_endereco.html'
+    model = models.Endereco
+    context_object_name = 'enderecos'
+    paginate_by = 6
+    ordering = ['-id']
+
+
+class ModificarEndereco(View):
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        
+        if request.user.is_authenticated:
+            endereco_id = self.kwargs.get("pk")
+            self.perfil = get_object_or_404(
+                models.Perfil, usuario = request.user)
+            self.endereco = get_object_or_404(
+                models.Endereco, pk = endereco_id)
+
+            self.contexto = {
+                'enderecoform':forms.EnderecoForm(
+                        data=self.request.POST or None,
+                        instance=self.endereco
+                    ),
+            }
+
+        else:
+            self.contexto={
+                'enderecoform':forms.EnderecoForm(
+                        data=self.request.POST or None,
+                    ),
+            }
+
+        self.enderecoform = self.contexto[ 'enderecoform']
+        self.render = render(self.request, 'perfil/endereco.html', self.contexto)
+
+    
+
+    def post(self,*args, **kwargs):
+        if not self.enderecoform.is_valid():
+            messages.error(
+                self.request,
+                'Dados inválidos! Verifique o formulário e tente novamente.'
+            )
+        
+        messages.success(
+            self.request,
+            'Endereço alterado com sucesso!'
+        )
+        endereco = self.enderecoform.save(commit=False)
+        endereco.usuario = self.perfil
+        endereco.save()
+
+        return redirect('perfil:enderecos')
+    
+    def get(self,*args, **kwargs):
+        
+        return self.render
+    
+
+class CriarEndereco(View):
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+
+        self.perfil = get_object_or_404(
+            models.Perfil, usuario = request.user)
+        
+        self.contexto = {
+            'enderecoform':forms.EnderecoForm(
+                    data=self.request.POST or None,
+                ),
+        }
+
+        self.enderecoform = self.contexto[ 'enderecoform']
+        self.render = render(self.request, 'perfil/endereco.html', self.contexto)
+
+    
+
+    def post(self,*args, **kwargs):
+        if not self.enderecoform.is_valid():
+            messages.error(
+                self.request,
+                'Dados inválidos! Verifique o formulário e tente novamente.'
+            )
+        
+        
+        endereco = self.enderecoform.save(commit=False)
+        endereco.usuario = self.perfil
+        endereco.save()
+        messages.success(
+            self.request,
+            'Endereço criado com sucesso!'
+        )
+
+        return redirect('perfil:enderecos')
+    
+    def get(self,*args, **kwargs):
+        return self.render
+    
