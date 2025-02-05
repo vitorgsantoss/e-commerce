@@ -104,7 +104,7 @@ class FecharPedido(View):
             variacao.save()
         messages.success(
             self.request,
-            'UHUL! Compra efetuada com sucesso!'
+            'Pedido registrado com sucesso!'
         )
 
         pedido = Pedido(

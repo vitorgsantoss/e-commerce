@@ -1,90 +1,93 @@
 {% extends 'base.html' %}
 {% load vg_filters %}
+{% block title %}
+  Resumo |
+{% endblock %}
+
 {% block conteudo %}
-{% if carrinho %}
-<div class="row mb-5">
-  <div class="col-lg">
-    <h2>Resumo da sua compra</h2>
+  {% if carrinho %}
+    <div class="row mb-5">
+      <div class="col-lg">
+        <h2>Resumo da sua compra</h2>
 
-    <p class="lead">Dados do usuário</p>
-    <p>
-      Caso precise editar, <a href="{% url 'perfil:criar' %}">clique aqui</a>
-    </p>
-    <dl class="row">
-      <dt class="col-lg-2">Nome:</dt>
-      <dd class="col-lg-4">{{ perfil.usuario.first_name }}</dd>
-      <dt class="col-lg-2">Sobrenome:</dt>
-      <dd class="col-lg-4">{{ perfil.usuario.last_name }}</dd>
+        <p class="lead">Dados do usuário</p>
+        <p>
+          Caso precise editar, <a href="{% url 'perfil:criar' %}">clique aqui</a>
+        </p>
+        <dl class="row">
+          <dt class="col-lg-2">Nome:</dt>
+          <dd class="col-lg-4">{{ perfil.usuario.first_name }}</dd>
+          <dt class="col-lg-2">Sobrenome:</dt>
+          <dd class="col-lg-4">{{ perfil.usuario.last_name }}</dd>
 
-      <dt class="col-lg-2">Nascimento:</dt>
-      <dd class="col-lg-4">{{ perfil.data_nascimento }}</dd>
+          <dt class="col-lg-2">Nascimento:</dt>
+          <dd class="col-lg-4">{{ perfil.data_nascimento }}</dd>
 
-      <dt class="col-lg-2">CPF:</dt>
-      <dd class="col-lg-4">{{ perfil.cpf }}</dd>
-      <dt class="col-lg-2">E-mail:</dt>
-      <dd class="col-lg-4">{{ perfil.usuario.email }}</dd>
-    </dl>
+          <dt class="col-lg-2">CPF:</dt>
+          <dd class="col-lg-4">{{ perfil.cpf }}</dd>
+          <dt class="col-lg-2">E-mail:</dt>
+          <dd class="col-lg-4">{{ perfil.usuario.email }}</dd>
+        </dl>
 
-    <p class="lead">Dados de endereço</p>
-    <p>
-      Caso precise editar, <a href="#">clique aqui</a>
-    </p>
-    {% for endereco in enderecos %}
-    <dl class="row">
-      <dt class="col-lg-2">Rua:</dt>
-      <dd class="col-lg-4">{{ endereco.rua }}</dd>
-      <dt class="col-lg-2">Número:</dt>
-      <dd class="col-lg-4">{{ endereco.numero }}</dd>
+        <p class="lead">Dados de endereço</p>
+        <p>
+          Caso precise editar, <a href="#">clique aqui</a>
+        </p>
+        {% for endereco in enderecos %}
+          <dl class="row">
+            <dt class="col-lg-2">Rua:</dt>
+            <dd class="col-lg-4">{{ endereco.rua }}</dd>
+            <dt class="col-lg-2">Número:</dt>
+            <dd class="col-lg-4">{{ endereco.numero }}</dd>
 
-      <dt class="col-lg-2">Complemento:</dt>
-      <dd class="col-lg-4">{{ endereco.complemento }}</dd>
-      <dt class="col-lg-2">Bairro:</dt>
-      <dd class="col-lg-4">{{ endereco.bairro }}</dd>
+            <dt class="col-lg-2">Complemento:</dt>
+            <dd class="col-lg-4">{{ endereco.complemento }}</dd>
+            <dt class="col-lg-2">Bairro:</dt>
+            <dd class="col-lg-4">{{ endereco.bairro }}</dd>
 
-      <dt class="col-lg-2">Cidade:</dt>
-      <dd class="col-lg-4">{{ endereco.cidade }}</dd>
-      <dt class="col-lg-2">Estado:</dt>
-      <dd class="col-lg-4">{{ endereco.estado }}</dd>
+            <dt class="col-lg-2">Cidade:</dt>
+            <dd class="col-lg-4">{{ endereco.cidade }}</dd>
+            <dt class="col-lg-2">Estado:</dt>
+            <dd class="col-lg-4">{{ endereco.estado }}</dd>
 
-      <dt class="col-lg-2">CEP:</dt>
-      <dd class="col-lg-4">{{ endereco.cep }}</dd>
-    </dl>
-    {% endfor %}
-  </div>
-</div>
+            <dt class="col-lg-2">CEP:</dt>
+            <dd class="col-lg-4">{{ endereco.cep }}</dd>
+          </dl>
+        {% endfor %}
+      </div>
+    </div>
 
-<div class="row">
-  <div class="col">
-    <h3>Carrinho de compras</h3>
-    <p class="lead">Os produtos, quantidades e preços que você escolheu.</p>
+    <div class="row">
+      <div class="col">
+        <h3>Carrinho de compras</h3>
+        <p class="lead">Os produtos, quantidades e preços que você escolheu.</p>
 
-    {% include 'partials/_carrinho.html' %}
-  </div>
-</div>
-<div class="mt-3 row">
-  <div class="col">
-    <p class="lead text-center">Total do carrinho: {{ carrinho|valor_total|formata_preco }}</p>
-  </div>
-</div>
+        {% include 'partials/_carrinho.html' %}
+      </div>
+    </div>
+    <div class="mt-3 row">
+      <div class="col">
+        <p class="lead text-center">Total do carrinho: {{ carrinho|valor_total|formata_preco }}</p>
+      </div>
+    </div>
 
-<div class="row">
-  <div class="col">
-    {% if not request.user.is_authenticated %}
-    <a class="btn btn-block btn-primary btn-lg" href="{% url 'perfil:criar' %}">Realizar login para finalizar o
-      pedido</a>
-    {% else %}
-    <a class="btn btn-block btn-primary btn-lg" href="{% url 'pedido:fecharpedido' %}">Realizar pedido e pagar</a>
-    {% endif %}
-  </div>
-</div>
-{% else %}
-<div class="row mb-5">
-  <div class="col-lg">
-    <h2>Carrinho de compras vazio</h2>
-    <p class="lead">
-      <a href="{% url 'produto:lista' %}">Adicione</a> produtos ao seu carrinho
-    </p>
-  </div>
-</div>
-{% endif %}
+    <div class="row">
+      <div class="col">
+        {% if not request.user.is_authenticated %}
+          <a class="btn btn-block btn-primary btn-lg" href="{% url 'perfil:criar' %}">Realizar login para finalizar o pedido</a>
+        {% else %}
+          <a class="btn btn-block btn-primary btn-lg" href="{% url 'pedido:fecharpedido' %}">Realizar pedido e pagar</a>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="row mb-5">
+      <div class="col-lg">
+        <h2>Carrinho de compras vazio</h2>
+        <p class="lead">
+          <a href="{% url 'produto:lista' %}">Adicione</a> produtos ao seu carrinho
+        </p>
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}
