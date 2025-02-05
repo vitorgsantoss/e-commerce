@@ -8,6 +8,7 @@ class PerfilForm(ModelForm):
         model = Perfil
         fields = '__all__'
         exclude = ('usuario','carrinho')
+    
 
 class EnderecoForm(ModelForm):
     class Meta:
@@ -50,11 +51,13 @@ class UserForm(ModelForm):
         user_db = User.objects.filter(username=usuario_data).first()
         email_db = User.objects.filter(email=email_data).first()
         
+        
         error_message_user_exists = 'Usuário já cadastrado!'
         error_message_email_exists = 'Endereço de e-mail já cadastrado!'
         error_message_password_match = 'As senhas não coincidem!'
         error_message_password_short = 'Insira uma senha com 6 ou mais caracteres!'
-        error_message_field_is_required = 'Este campo é obrigatório!'
+        
+        
         
 
         if self.usuario:
@@ -65,6 +68,8 @@ class UserForm(ModelForm):
             if self.email != email_data:
                 if email_db:
                     validation_error_messages['email'] = error_message_email_exists
+            
+            
 
             if password_data:
 

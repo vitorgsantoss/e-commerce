@@ -16,7 +16,16 @@ class Perfil(models.Model):
     carrinho = models.JSONField(null=True, blank=True)
 
     def clean(self):
-        error_messages = {}
+        error_messages = {} 
+
+        cpf_data = self.cpf or None
+        cpf_db = None
+        perfil = Perfil.objects.filter(cpf=cpf_data).first()
+
+        if perfil:
+            cpf_db = perfil.cpf
+            if cpf_db is not None and self.pk != perfil.pk:
+                error_messages['cpf']='CPF já cadastratado na base de dados.'
 
         if not validate(self.cpf):
             error_messages['cpf'] = 'Digite um CPF válido'

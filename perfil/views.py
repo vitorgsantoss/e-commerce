@@ -76,6 +76,7 @@ class Criar(BasePerfil):
         last_name = self.userform.cleaned_data.get('last_name')
 
         self.carrinho = copy.deepcopy(self.request.session.get('carrinho'),{})
+        message = ''
 
         if self.request.user.is_authenticated:
             usuario = get_object_or_404(
@@ -86,6 +87,7 @@ class Criar(BasePerfil):
             usuario.first_name = first_name
             usuario.last_name = last_name
             usuario.email = email
+            message = 'alterado'
 
             if password:
                 usuario.set_password(password)
@@ -112,6 +114,7 @@ class Criar(BasePerfil):
             endereco = self.enderecoform.save(commit=False)
             endereco.usuario = perfil
             endereco.save()
+            message = 'criado'
         
         if password:
             autentica = authenticate(
@@ -121,6 +124,11 @@ class Criar(BasePerfil):
             )
             if autentica:
                 login(self.request, user=usuario)
+
+        messages.success(
+            self.request,
+            f'Usuário {message} com sucesso!'
+        )
 
         self.request.session['carrinho']=self.carrinho
         self.request.session.save()
