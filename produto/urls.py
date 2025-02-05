@@ -13,5 +13,6 @@ urlpatterns = [
         name='removervariacaocarrinho'),
     path('carrinho/', views.Carrinho.as_view(), name='carrinho'),
     path('finalizar/', views.Finalizar.as_view(), name='finalizar'),
+    path('busca/', views.Busca.as_view(), name='busca'),
     path('<slug>/', views.DetalheProduto.as_view(), name='detalhe'),
 ]

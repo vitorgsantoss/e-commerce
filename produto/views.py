@@ -1,10 +1,11 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect, reverse, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views import View
 from .models import Produto, Variacao
 from perfil.models import Perfil, Endereco
+from django.db.models import Q
 
 
 
@@ -12,7 +13,7 @@ class ListaProdutos(ListView):
     model = Produto
     template_name = 'produto/lista.html'
     context_object_name = 'produtos'
-    paginate_by = 6
+    paginate_by = 10
     ordering = ['-id']
 
 
@@ -102,8 +103,7 @@ class AdicionarAoCarrinho(View):
 
         return redirect(
             'produto:carrinho',            
-        )
-            
+        )           
             
             
 class RemoverVariacaoDoCarrinho(View):
@@ -222,3 +222,22 @@ class Finalizar(View):
             'produto/resumo_da_compra.html',
             contexto
         )
+
+
+class Busca(ListaProdutos):
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        search = self.request.GET.get('search') or self.request.session['search']
+
+        if search:
+            self.request.session['search']=search
+
+            qs = qs.filter(
+                Q(nome__icontains = search) |
+                Q(descricao_curta__icontains = search) |
+                Q(descricao_longa__icontains = search) 
+            )
+
+        self.request.session.save()
+        return qs
