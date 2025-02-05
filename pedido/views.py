@@ -5,6 +5,7 @@ from produto.models import Variacao
 from .models import Pedido, ItemPedido
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from perfil.models import Endereco
 
 
 class DispatchLoginRequired(View):
@@ -106,11 +107,14 @@ class FecharPedido(View):
             self.request,
             'Pedido registrado com sucesso!'
         )
+        endereco_id = self.request.GET.get('endereco_envio') or None
+        endereco_envio = Endereco.objects.filter(id = endereco_id).first()
 
         pedido = Pedido(
             user= self.request.user,
             total = cart_total,
-            status = 'C'
+            status = 'C',
+            endereco = endereco_envio,
         )
         pedido.save()
 

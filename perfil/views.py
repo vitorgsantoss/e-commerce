@@ -270,7 +270,7 @@ class CriarEndereco(View):
         }
 
         self.enderecoform = self.contexto[ 'enderecoform']
-        self.render = render(self.request, 'perfil/endereco.html', self.contexto)
+        self.render = render(self.request, 'perfil/criar_endereco.html', self.contexto)
 
     
 

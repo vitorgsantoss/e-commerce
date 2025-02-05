@@ -11,10 +11,17 @@
       <div class="col-lg-2 font-weight-bold">Total a pagar:</div>
       <div class="col-lg-4">{{ pedido.total|formata_preco }}</div>
 
-      <div class="col-lg-2 font-weight-bold">QTD. Itens:</div>
-      <div class="col-lg-4">{{ pedido.qtd_total }}</div>
       <div class="col-lg-2 font-weight-bold">Status:</div>
       <div class="col-lg-4">{{ pedido.get_status_display }}</div>
+      {% if pedido.endereco %}
+        <div class="col-lg-2 font-weight-bold">CEP:</div>
+        <div class="col-lg-4">{{ pedido.endereco.cep }}</div>
+        <div class="col-lg-2 font-weight-bold">Endereço:</div>
+        <div class="col-lg-4">{{ pedido.endereco.rua }},
+          {{ pedido.endereco.numero }}.
+          {{ pedido.endereco.cidade }} -
+          {{ pedido.endereco.estado }}</div>
+      {% endif %}
     </div>
 
     <div class="row mt-4">
@@ -33,20 +40,20 @@
         </tr>
 
         {% for linha in pedido.itempedido_set.all %}
-        <tr>
-          <td class="d-none d-lg-block">
-            <img class="cart-img" src="{% get_media_prefix %}{{ linha.imagem }}" />
-          </td>
-          <td>{{ linha.produto }}</td>
-          <td>{{ linha.variacao }}</td>
-          <td>
-            {% if linha.preco_promocional %}
-            {{ linha.preco_promocional|formata_preco }}
-            {% else %}
-            {{ linha.preco|formata_preco }}
-            {% endif %}
-          </td>
-        </tr>
+          <tr>
+            <td class="d-none d-lg-block">
+              <img class="cart-img" src="{% get_media_prefix %}{{ linha.imagem }}" />
+            </td>
+            <td>{{ linha.produto }}</td>
+            <td>{{ linha.variacao }}</td>
+            <td>
+              {% if linha.preco_promocional %}
+                {{ linha.preco_promocional|formata_preco }}
+              {% else %}
+                {{ linha.preco|formata_preco }}
+              {% endif %}
+            </td>
+          </tr>
         {% endfor %}
       </table>
     </div>

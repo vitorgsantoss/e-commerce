@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from perfil.models import Endereco
 
 # Create your models here.
 
@@ -17,6 +18,12 @@ class Pedido(models.Model):
             ('E','Enviado'),
             ('F','Finalizado'),
         )
+    )
+    endereco = models.ForeignKey(
+        Endereco,
+        on_delete=models.CASCADE,
+        null= True, 
+        blank=True,
     )
 
     def __str__(self):
