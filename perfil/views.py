@@ -249,7 +249,7 @@ class ModificarEndereco(View):
         endereco.usuario = self.perfil
         endereco.save()
 
-        return redirect('perfil:enderecos')
+        return redirect('perfil:listar_enderecos')
     
     def get(self,*args, **kwargs):
         
@@ -290,7 +290,7 @@ class CriarEndereco(View):
             'Endereço criado com sucesso!'
         )
 
-        return redirect('perfil:enderecos')
+        return redirect('perfil:listar_enderecos')
     
     def get(self,*args, **kwargs):
         return self.render
